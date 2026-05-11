@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBF3C Unit 5 - Probability & Risk Calculator</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .calc-section {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            border-left: 5px solid var(--accent);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.25rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .input-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            grid-column: span 2;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .result-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f0f7fd;
+            border-radius: 5px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .result-box span {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        small {
+            display: block;
+            margin-top: 5px;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Unit 5: Risk Calculator</h1>
+        <p>MBF3C Financial Mathematics & Probability Tool</p>
+    </header>
+
+    <!-- 1. Experimental Probability -->
+    <div class="calc-section">
+        <h2>1. Experimental Probability</h2>
+        <div class="input-group">
+            <div class="input-item">
+                <label>Successes (Event Hits)</label>
+                <input type="number" id="exp-success" placeholder="e.g. 50">
+            </div>
+            <div class="input-item">
+                <label>Total Trials</label>
+                <input type="number" id="exp-total" placeholder="e.g. 2500">
+            </div>
+            <button onclick="calcExperimental()">Calculate Probability</button>
+        </div>
+        <div id="res-exp" class="result-box">
+            The Experimental Probability is: <span id="val-exp"></span>
+        </div>
+    </div>
+
+    <!-- 2. Odds to Probability -->
+    <div class="calc-section">
+        <h2>2. Odds to Probability Converter</h2>
+        <div class="input-group">
+            <div class="input-item">
+                <label>Win Odds (Left Side)</label>
+                <input type="number" id="odds-win" placeholder="e.g. 4">
+            </div>
+            <div class="input-item">
+                <label>Lose Odds (Right Side)</label>
+                <input type="number" id="odds-lose" placeholder="e.g. 16">
+            </div>
+            <button onclick="calcOddsToProb()">Convert to Probability</button>
+        </div>
+        <div id="res-odds" class="result-box">
+            Probability of Winning: <span id="val-odds-win"></span><br>
+            Probability of Failure: <span id="val-odds-lose"></span>
+        </div>
+    </div>
+
+    <!-- 3. Dependent Events (Without Replacement) -->
+    <div class="calc-section">
+        <h2>3. Dependent Events (Without Replacement)</h2>
+        <small>Probability of drawing the SAME item twice in a row.</small>
+        <div class="input-group">
+            <div class="input-item">
+                <label>Initial Target Items</label>
+                <input type="number" id="dep-target" placeholder="e.g. 4">
+            </div>
+            <div class="input-item">
+                <label>Initial Total Items</label>
+                <input type="number" id="dep-total" placeholder="e.g. 15">
+            </div>
+            <button onclick="calcDependent()">Calculate Second Draw Prob</button>
+        </div>
+        <div id="res-dep" class="result-box">
+            Probability of drawing target on 2nd attempt: <span id="val-dep"></span>
+        </div>
+    </div>
+
+    <!-- 4. Expected Value (EV) -->
+    <div class="calc-section">
+        <h2>4. Expected Value (Financial Risk)</h2>
+        <div class="input-group">
+            <div class="input-item">
+                <label>Win Probability (%)</label>
+                <input type="number" id="ev-prob" placeholder="e.g. 10">
+            </div>
+            <div class="input-item">
+                <label>Amount Won ($)</label>
+                <input type="number" id="ev-win-amt" placeholder="e.g. 500">
+            </div>
+            <div class="input-item">
+                <label>Amount Lost ($)</label>
+                <input type="number" id="ev-lose-amt" placeholder="e.g. 20">
+            </div>
+            <button onclick="calcEV()">Calculate Expected Value</button>
+        </div>
+        <div id="res-ev" class="result-box">
+            The Expected Value is: <span id="val-ev"></span>
+            <br><small id="ev-verdict"></small>
+        </div>
+    </div>
+
+    <!-- 5. Warranty Profit (Company View) -->
+    <div class="calc-section">
+        <h2>5. Extended Warranty Profit Calculator</h2>
+        <div class="input-group">
+            <div class="input-item">
+                <label>Warranty Price ($)</label>
+                <input type="number" id="war-price" placeholder="e.g. 200">
+            </div>
+            <div class="input-item">
+                <label>Item Repair/Replacement Cost ($)</label>
+                <input type="number" id="war-item-cost" placeholder="e.g. 800">
+            </div>
+            <div class="input-item">
+                <label>Failure Probability (%)</label>
+                <input type="number" id="war-fail-prob" placeholder="e.g. 15">
+            </div>
+            <button onclick="calcWarranty()">Calculate Company Profit</button>
+        </div>
+        <div id="res-war" class="result-box">
+            Expected Profit per Warranty: <span id="val-war"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showRes(id) { document.getElementById(id).style.display = 'block'; }
+
+    function calcExperimental() {
+        const s = parseFloat(document.getElementById('exp-success').value);
+        const t = parseFloat(document.getElementById('exp-total').value);
+        if(t > 0) {
+            const res = (s / t).toFixed(3);
+            document.getElementById('val-exp').innerText = res;
+            showRes('res-exp');
+        }
+    }
+
+    function calcOddsToProb() {
+        const w = parseFloat(document.getElementById('odds-win').value);
+        const l = parseFloat(document.getElementById('odds-lose').value);
+        const total = w + l;
+        if(total > 0) {
+            document.getElementById('val-odds-win').innerText = (w / total).toFixed(3) + " (" + ((w/total)*100).toFixed(1) + "%)";
+            document.getElementById('val-odds-lose').innerText = (l / total).toFixed(3) + " (" + ((l/total)*100).toFixed(1) + "%)";
+            showRes('res-odds');
+        }
+    }
+
+    function calcDependent() {
+        const target = parseFloat(document.getElementById('dep-target').value);
+        const total = parseFloat(document.getElementById('dep-total').value);
+        if(total > 1) {
+            const res = ((target - 1) / (total - 1)).toFixed(3);
+            document.getElementById('val-dep').innerText = res;
+            showRes('res-dep');
+        }
+    }
+
+    function calcEV() {
+        const pWin = parseFloat(document.getElementById('ev-prob').value) / 100;
+        const winAmt = parseFloat(document.getElementById('ev-win-amt').value);
+        const loseAmt = parseFloat(document.getElementById('ev-lose-amt').value);
+        
+        if(!isNaN(pWin)) {
+            const ev = (pWin * winAmt) - ((1 - pWin) * loseAmt);
+            document.getElementById('val-ev').innerText = "$" + ev.toFixed(2);
+            const verdict = ev < 0 ? "⚠️ This is a Negative EV decision (Bad deal long-term)." : "✅ This is a Positive EV decision.";
+            document.getElementById('ev-verdict').innerText = verdict;
+            showRes('res-ev');
+        }
+    }
+
+    function calcWarranty() {
+        const price = parseFloat(document.getElementById('war-price').value);
+        const cost = parseFloat(document.getElementById('war-item-cost').value);
+        const pFail = parseFloat(document.getElementById('war-fail-prob').value) / 100;
+
+        if(!isNaN(pFail)) {
+            const expLoss = cost * pFail;
+            const profit = price - expLoss;
+            document.getElementById('val-war').innerText = "$" + profit.toFixed(2);
+            showRes('res-war');
+        }
+    }
+</script>
+
+</body>
+</html>
